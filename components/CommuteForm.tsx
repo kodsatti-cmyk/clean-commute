@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OFFICE_LOCATIONS, TRAVEL_MODES } from "@/lib/seed";
 
 interface CommuteFormProps {
@@ -8,9 +8,21 @@ interface CommuteFormProps {
 }
 
 export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
+  const successMessageRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!success) return;
+
+    successMessageRef.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "center",
+    });
+  }, [success]);
 
   const [formData, setFormData] = useState({
     office_location: preselectedLocation || "",
@@ -102,7 +114,12 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Success message */}
       {success && (
-        <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-md shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+        <div
+          ref={successMessageRef}
+          role="status"
+          aria-live="polite"
+          className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-md shadow-sm animate-in fade-in slide-in-from-top-2 duration-300"
+        >
           <div className="flex items-center gap-3">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
