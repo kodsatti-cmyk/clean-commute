@@ -13,7 +13,11 @@ export async function GET() {
     const totals = await sql`
       SELECT 
         COUNT(*) as total_entries,
-        COALESCE(SUM(kilometers), 0) as total_kilometers
+        COALESCE(SUM(kilometers), 0) as total_kilometers,
+        current_database() as database_name,
+        current_schema() as schema_name,
+        MAX(id) as latest_entry_id,
+        MAX(logged_at) as latest_entry_at
       FROM commute_entries;
     `;
 
@@ -52,6 +56,14 @@ export async function GET() {
     `;
 
     const totalCount = parseInt(totals.rows[0]?.total_entries || "0");
+    console.info("[Dashboard stats] Database query result", {
+      database: totals.rows[0]?.database_name,
+      schema: totals.rows[0]?.schema_name,
+      entries: totalCount,
+      kilometers: totals.rows[0]?.total_kilometers,
+      latestEntryId: totals.rows[0]?.latest_entry_id,
+      latestEntryAt: totals.rows[0]?.latest_entry_at,
+    });
     
     // Calculate percentages for modes
     const modesWithPercentage = modeBreakdown.rows.map((mode) => ({
