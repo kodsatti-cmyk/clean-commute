@@ -2,8 +2,11 @@ import QRGenerator from "@/components/QRGenerator";
 import { OFFICE_LOCATIONS } from "@/lib/seed";
 
 export default function QRPage() {
-  // Generate base URL (will be replaced with actual deployed URL)
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const vercelHost =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
@@ -34,9 +37,9 @@ export default function QRPage() {
             </div>
             <div className="ml-3">
               <p className="text-sm text-yellow-700">
-                <strong>Important:</strong> After deploying to Vercel, update
-                the <code>NEXT_PUBLIC_BASE_URL</code> environment variable with
-                your production URL, then regenerate these QR codes.
+                <strong>Important:</strong> QR codes use the
+                <code> NEXT_PUBLIC_BASE_URL </code> override when configured;
+                otherwise Vercel&apos;s production URL is used automatically.
               </p>
             </div>
           </div>
