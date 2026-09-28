@@ -5,8 +5,8 @@ export default function QRPage() {
   const vercelHost =
     process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");
+    (vercelHost ? `https://${vercelHost}` : process.env.NEXT_PUBLIC_BASE_URL) ||
+    "http://localhost:3000";
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
