@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { sql } from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -6,6 +7,13 @@ export const dynamic = "force-dynamic";
 const noStoreHeaders = {
   "Cache-Control": "private, no-store, max-age=0, must-revalidate",
 };
+
+function getDatabaseUrlFingerprint() {
+  const databaseUrl = process.env.POSTGRES_URL;
+  return databaseUrl
+    ? createHash("sha256").update(databaseUrl).digest("hex").slice(0, 12)
+    : "missing";
+}
 
 export async function GET() {
   try {
@@ -57,6 +65,7 @@ export async function GET() {
 
     const totalCount = parseInt(totals.rows[0]?.total_entries || "0");
     console.info("[Dashboard stats] Database query result", {
+      connectionFingerprint: getDatabaseUrlFingerprint(),
       database: totals.rows[0]?.database_name,
       schema: totals.rows[0]?.schema_name,
       entries: totalCount,
