@@ -1,6 +1,12 @@
 import { sql } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
+const noStoreHeaders = {
+  "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+};
+
 export async function GET() {
   try {
     // Total entries and kilometers
@@ -55,20 +61,23 @@ export async function GET() {
         : "0.0",
     }));
 
-    return NextResponse.json({
-      totals: {
-        entries: totalCount,
-        kilometers: parseFloat(totals.rows[0]?.total_kilometers || "0"),
+    return NextResponse.json(
+      {
+        totals: {
+          entries: totalCount,
+          kilometers: parseFloat(totals.rows[0]?.total_kilometers || "0"),
+        },
+        byMode: modesWithPercentage,
+        byLocation: locationBreakdown.rows,
+        daily: dailyEntries.rows,
       },
-      byMode: modesWithPercentage,
-      byLocation: locationBreakdown.rows,
-      daily: dailyEntries.rows,
-    });
+      { headers: noStoreHeaders }
+    );
   } catch (error) {
     console.error("Stats fetch error:", error);
     return NextResponse.json(
       { error: "Failed to fetch statistics" },
-      { status: 500 }
+      { status: 500, headers: noStoreHeaders }
     );
   }
 }
