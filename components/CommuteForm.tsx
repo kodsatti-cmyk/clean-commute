@@ -35,8 +35,8 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
     formData.office_location &&
     formData.travel_mode &&
     formData.kilometers &&
-    parseFloat(formData.kilometers) > 0 &&
-    parseFloat(formData.kilometers) <= 70;
+    parseInt(formData.kilometers) > 0 &&
+    parseInt(formData.kilometers) <= 70;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
         body: JSON.stringify({
           office_location: formData.office_location,
           travel_mode: formData.travel_mode,
-          kilometers: parseFloat(formData.kilometers),
+          kilometers: parseInt(formData.kilometers),
         }),
       });
 
@@ -83,11 +83,11 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
     }
   };
 
-  // Handle distance input with validation
+  // Handle distance input with validation (whole numbers only)
   const handleDistanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow empty or valid decimal numbers up to 70 km.
-    if (value === '' || (/^\d+(\.\d{0,1})?$/.test(value) && parseFloat(value) <= 70)) {
+    // Allow empty or whole numbers up to 70 km
+    if (value === '' || (/^\d+$/.test(value) && parseInt(value) <= 70)) {
       setFormData({ ...formData, kilometers: value });
     }
   };
@@ -106,7 +106,7 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
   };
 
   // Validate distance for warnings
-  const distanceWarning = formData.kilometers && parseFloat(formData.kilometers) > 100
+  const distanceWarning = formData.kilometers && parseInt(formData.kilometers) > 50
     ? "That's a long commute! Double-check the distance."
     : null;
 
@@ -253,22 +253,22 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
           <input
             id="kilometers"
             type="number"
-            step="0.1"
-            min="0"
+            step="1"
+            min="1"
             max="70"
             required
             value={formData.kilometers}
             onChange={handleDistanceChange}
-            placeholder="e.g., 15.5"
+            placeholder="e.g., 15"
             className={`w-full px-4 py-3.5 pr-12 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base shadow-sm transition-all hover:border-gray-400 ${
-              formData.kilometers && parseFloat(formData.kilometers) > 0
+              formData.kilometers && parseInt(formData.kilometers) > 0
                 ? "border-emerald-300"
                 : "border-gray-300"
             }`}
             aria-describedby="distance-hint"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none gap-2">
-            {formData.kilometers && parseFloat(formData.kilometers) > 0 && (
+            {formData.kilometers && parseInt(formData.kilometers) > 0 && (
               <svg className="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
@@ -279,10 +279,10 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
         <div className="mt-3">
           <input
             type="range"
-            min="0"
+            min="1"
             max="70"
-            step="0.1"
-            value={formData.kilometers || "0"}
+            step="1"
+            value={formData.kilometers || "1"}
             onChange={(e) =>
               setFormData({ ...formData, kilometers: e.target.value })
             }
@@ -290,7 +290,7 @@ export default function CommuteForm({ preselectedLocation }: CommuteFormProps) {
             className="w-full accent-emerald-600"
           />
           <div className="flex justify-between text-xs text-gray-500">
-            <span>0 km</span>
+            <span>1 km</span>
             <span>70 km</span>
           </div>
         </div>
